@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axilo - Resonate With Your Kin</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Axilo: A social platform for deep connection, celebrating small successes and authentic selves. No labels, just resonance. Join a community that motivates and understands.">
+    <meta name="keywords" content="social media, dating app, deep connection, personality, productivity, motivation, authenticity, no labels, resonate">
+
+    <!-- Google Fonts for the distinct aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Lora:ital,wght@0,400;0,700;1,400&family=Roboto+Mono:wght@300;400&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- THEME & VARIABLES --- */
+        :root {
+            /* Dark Theme (Default) */
+            --bg-color: #1a120b; /* Dark Sienna */
+            --bg-secondary: #0f0a06; /* Even Darker */
+            --bg-tertiary: #2a221b; /* A slightly lighter dark for accents */
+            --text-color: #f5e6d3; /* Papaya Whip / Beige */
+            --text-muted: rgba(245, 230, 211, 0.6);
+            --primary-accent: #e57c23; /* Vibrant Orange */
+            --secondary-accent: #8b4513; /* Saddle Brown */
+            --border-color: #4a3f35;
+            --success-color: #2ca02c; /* Muted Green */
+            --font-ui: 'VT323', monospace;
+            --font-body: 'Lora', serif;
+            --font-code: 'Roboto Mono', monospace;
+            --scanline-opacity: 0.3;
+            --shadow-color: rgba(229, 124, 35, 0.2);
+        }
+
+        /* Light Theme (For The Witch) */
+        :root[data-theme="light"] {
+            --bg-color: #f4f1ea; /* Parchment */
+            --bg-secondary: #ffffff; /* White */
+            --bg-tertiary: #e9e4d9; /* Darker Parchment */
+            --text-color: #2c3e50; /* Slate Gray/Blue */
+            --text-muted: rgba(44, 62, 80, 0.65);
+            --primary-accent: #8e44ad; /* Wisteria Purple */
+            --secondary-accent: #95a5a6; /* Silver/Gray */
+            --border-color: #dcd7cd;
+            --success-color: #27ae60; /* Nephritis Green */
+            --scanline-opacity: 0.05;
+            --shadow-color: rgba(142, 68, 173, 0.15);
+        }
+
+        /* --- BROWSER ENHANCEMENTS & RESETS --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        ::selection {
+            background-color: var(--primary-accent);
+            color: var(--bg-secondary);
+        }
+        ::-moz-selection {
+            background-color: var(--primary-accent);
+            color: var(--bg-secondary);
+        }
+
+        /* Custom Scrollbar for a cohesive look - APPLIED TO ALL SCROLLABLE ELEMENTS */
+        main::-webkit-scrollbar,
+        #conversation-list::-webkit-scrollbar,
+        #message-area::-webkit-scrollbar,
+        #result-lore::-webkit-scrollbar {
+            width: 10px;
+        }
+        main::-webkit-scrollbar-track,
+        #conversation-list::-webkit-scrollbar-track,
+        #message-area::-webkit-scrollbar-track,
+        #result-lore::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        main::-webkit-scrollbar-thumb,
+        #conversation-list::-webkit-scrollbar-thumb,
+        #message-area::-webkit-scrollbar-thumb,
+        #result-lore::-webkit-scrollbar-thumb {
+             background: var(--primary-accent); 
+            border: 2px solid var(--bg-secondary);
+            border-radius: 5px;
+        }
+        main::-webkit-scrollbar-thumb:hover,
+        #conversation-list::-webkit-scrollbar-thumb:hover,
+        #message-area::-webkit-scrollbar-thumb:hover,
+        #result-lore::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-accent);
+        }
+        main, #chat-panel, #result-lore {
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-accent) var(--bg-secondary); 
+        }
+
+        /* --- BASE & LAYOUT --- */
+        html, body {
+            height: 100%;
+            overflow: hidden; /* CRITICAL: Prevents body scrolling */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Scanline Overlay for retro terminal feel */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,var(--scanline-opacity)) 0, rgba(0,0,0,var(--scanline-opacity)) 1px, transparent 1px, transparent 3px);
+            pointer-events: none;
+            z-index: 9999;
+            transition: background 0.3s ease;
+        }
+
+        /* --- ONBOARDING / PERSONALITY SEQUENCE --- */
+        #onboarding-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+            height: 100vh; /* Ensure it fits the screen */
+            max-width: 800px;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        #onboarding-container.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .onboarding-title {
+            font-family: var(--font-ui);
+            font-size: 3.5rem;
+            color: var(--primary-accent);
+            text-shadow: 0 0 10px var(--primary-accent);
+            margin-bottom: 20px;
+        }
+
+        .onboarding-prompt {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+
+        .choice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            width: 100%;
+        }
+
+        .choice-btn {
+            background: transparent;
+            border: 2px solid var(--secondary-accent);
+            color: var(--text-color);
+            padding: 25px;
+            font-family: var(--font-body);
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .choice-btn:hover {
+            background: rgba(229, 124, 35, 0.1);
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 10px var(--shadow-color);
+            transform: translateY(-5px);
+        }
+        :root[data-theme="light"] .choice-btn:hover {
+             background: rgba(142, 68, 173, 0.1);
+        }
+
+        #result-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-height: 90vh; /* Prevent the container itself from overflowing */
+        }
+
+        /* FIX: PREVENT ONBOARDING TEXT OVERFLOW */
+        #result-lore {
+            font-family: var(--font-code);
+            line-height: 1.8;
+            font-size: 1.1rem;
+            white-space: pre-wrap;
+            border: 2px solid var(--border-color);
+            padding: 20px;
+            background: var(--bg-secondary);
+            width: 100%;
+            max-width: 700px;
+            margin-bottom: 30px;
+            cursor: pointer;
+            text-align: left;
+            flex-grow: 1; /* Allows it to take space */
+            flex-shrink: 1; /* Allows it to shrink */
+            overflow-y: auto; /* Adds scrollbar only if needed */
+            min-height: 100px; /* Give it some base height */
+        }
+
+        .blinking-cursor {
+            font-weight: bold;
+            animation: blink 1s step-start infinite;
+            background-color: var(--primary-accent);
+            display: inline-block;
+            width: 10px;
+            height: 1.1rem;
+            vertical-align: text-bottom;
+            margin-left: 2px;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* --- MAIN APP CONTAINER --- NEW LAYOUT --- */
+        #app-container {
+            width: 100vw;
+            height: 100vh;
+            display: none; /* Hidden until onboarding is complete */
+            background: var(--bg-color);
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        #app-container.visible {
+            display: grid;
+            grid-template-columns: 70px 1fr 350px; /* Sidebar, Main, Chat */
+            grid-template-rows: 1fr;
+            opacity: 1;
+        }
+
+        /* --- NEW ICON SIDEBAR --- */
+        #app-sidebar {
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .sidebar-logo {
+            font-family: var(--font-ui);
+            font-size: 2rem;
+            color: var(--primary-accent);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .sidebar-icon:hover, .sidebar-icon.active {
+            background-color: var(--primary-accent);
+            color: var(--bg-secondary);
+        }
+        .sidebar-icon.active::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 70%;
+            background-color: var(--primary-accent);
+            border-radius: 2px;
+        }
+        .sidebar-icon .tooltip {
+            visibility: hidden;
+            width: 120px;
+            background-color: var(--bg-secondary);
+            color: var(--text-color);
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            left: 110%;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border: 1px solid var(--border-color);
+        }
+        .sidebar-icon:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        #sidebar-footer {
+            margin-top: auto;
+        }
+        
+        #chat-toggle-btn {
+             display: none; /* Hidden by default on desktop */
+        }
+        
+        /* --- LEGACY BROWSER-TAB NAVIGATION --- */
+        /* Hidden as per user request to replace with sidebar, but not deleted */
+        #main-nav { display: none !important; }
+
+        /* --- MAIN CONTENT AREA --- */
+        main {
+            overflow-y: auto; /* CRITICAL: Main content area scrolls, not the body */
+            padding: 35px;
+            position: relative;
+        }
+        .content-section {
+            /* Now handled by JS for smooth transitions */
+            display: block; 
+            position: absolute;
+            top: 35px; left: 35px; right: 35px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+            transform: translateY(15px);
+            pointer-events: none;
+        }
+        .content-section.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* --- PERMANENT CHAT PANEL --- */
+        #chat-panel {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            border-left: 1px solid var(--border-color);
+            background-color: var(--bg-secondary);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* --- Section: FEED --- */
+        #feed-section {
+            max-width: 750px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .post-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .post-box textarea {
+            width: 100%;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 10px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            min-height: 80px;
+            resize: vertical;
+            border-radius: 4px;
+        }
+        .post-box button {
+            background: var(--primary-accent);
+            color: var(--bg-secondary);
+            border: none;
+            padding: 10px 20px;
+            font-family: var(--font-ui);
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-top: 10px;
+            float: right;
+            border-radius: 4px;
+        }
+
+        .axilo-post { /* Renamed from echo-post */
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .axilo-post:hover { /* Renamed from echo-post */
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 15px var(--shadow-color);
+        }
+        
+        .axilo-header { /* Renamed from echo-header */
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: var(--bg-tertiary);
+        }
+
+        .axilo-avatar { /* Renamed from echo-avatar */
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-accent);
+        }
+
+        .axilo-user-info h3 { /* Renamed from echo-user-info */
+            font-family: var(--font-ui);
+            font-size: 1.5rem;
+            color: var(--primary-accent);
+        }
+        .axilo-user-info p { /* Renamed from echo-user-info */
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .axilo-content { /* Renamed from echo-content */
+            padding: 20px;
+            line-height: 1.7;
+        }
+        .axilo-content p { margin-bottom: 10px; }
+        .axilo-content .code-block {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            font-family: var(--font-code);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+
+        .axilo-actions { /* Renamed from echo-actions */
+            display: flex;
+            gap: 20px;
+            padding: 10px 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        .action-btn {
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-code);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+        .action-btn:hover {
+            color: var(--primary-accent);
+        }
+        .action-btn i { margin-right: 8px; }
+
+        .comment-section {
+            padding: 0 20px 20px 20px;
+        }
+        .comment {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .comment-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 1px solid var(--secondary-accent);
+            flex-shrink: 0;
+        }
+        .comment-body {
+            background: var(--bg-color);
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+        }
+        .comment-body strong {
+            color: var(--primary-accent);
+            font-family: var(--font-ui);
+            font-size: 1.1rem;
+            font-weight: normal;
+        }
+        /* Style for chat panel close button */
+        #chat-header {
+            position: relative; /* For absolute positioning of close button */
+        }
+        .chat-close-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: none; /* Hidden by default on desktop */
+        }
+        .chat-close-btn:hover {
+            color: var(--primary-accent);
+        }
+
+        /* --- Section: DISCOVER --- */
+        #discover-section {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .discover-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .discover-header h1 {
+            font-family: var(--font-ui);
+            font-size: 2.5rem;
+            color: var(--primary-accent);
+        }
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .user-card {
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-secondary);
+            text-align: center;
+            border-radius: 8px;
+        }
+        .user-card:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 10px var(--shadow-color);
+            transform: translateY(-5px);
+        }
+        .user-card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid var(--primary-accent);
+            margin-bottom: 15px;
+        }
+        .user-card h3 {
+            font-family: var(--font-ui);
+            font-size: 1.8rem;
+            color: var(--primary-accent);
+            letter-spacing: 1px;
+        }
+        .user-card p {
+            font-family: var(--font-body);
+            font-style: italic;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        /* --- Styles for Chat Panel content --- */
+        #conversation-list {
+            height: 40%;
+            min-height: 200px;
+            border-bottom: 1px solid var(--border-color);
+            overflow-y: auto;
+        }
+        .conversation {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            gap: 15px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .conversation:hover, .conversation.active {
+            background: var(--bg-tertiary);
+        }
+        :root[data-theme="light"] .conversation:hover, :root[data-theme="light"] .conversation.active {
+            background: var(--bg-tertiary);
+        }
+        .conv-info p { font-size: 0.9rem; opacity: 0.6; }
+
+        #chat-window {
+            height: 60%;
+            display: flex;
+            flex-direction: column;
+        }
+        #chat-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            font-family: var(--font-ui);
+            font-size: 1.5rem;
+            color: var(--primary-accent);
+            flex-shrink: 0;
+        }
+        #message-area {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .message {
+            display: flex;
+            max-width: 80%;
+        }
+        .message-bubble {
+            padding: 10px 15px;
+            border-radius: 15px;
+            line-height: 1.5;
+        }
+        .message.sent {
+            align-self: flex-end;
+        }
+        .message.sent .message-bubble {
+            background: var(--primary-accent);
+            color: var(--bg-secondary);
+            border-bottom-right-radius: 3px;
+        }
+        .message.received {
+            align-self: flex-start;
+        }
+        .message.received .message-bubble {
+            background: var(--bg-tertiary);
+            color: var(--text-color);
+            border-bottom-left-radius: 3px;
+        }
+        #chat-input-area {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+        }
+        #chat-input-area input {
+            flex-grow: 1;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 10px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            border-radius: 5px 0 0 5px;
+        }
+        #chat-input-area button {
+            background: var(--primary-accent);
+            border: none;
+            color: var(--bg-secondary);
+            padding: 0 20px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        /* --- Legacy Section: MESSAGES (hidden, content moved to chat panel) --- */
+        #messages-section { display: none !important; }
+
+        /* --- Section: PROFILE --- */
+        #profile-section {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        #profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            background: var(--bg-secondary);
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+        #profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid var(--primary-accent);
+            flex-shrink: 0;
+        }
+        #profile-username {
+            font-family: var(--font-ui);
+            font-size: 3rem;
+            color: var(--primary-accent);
+            text-shadow: 0 0 10px var(--shadow-color);
+        }
+        #profile-title {
+            font-size: 1.2rem;
+            font-style: italic;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .profile-section { margin-bottom: 30px; }
+        .section-title {
+            font-family: var(--font-ui);
+            font-size: 1.8rem;
+            color: var(--primary-accent);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #profile-stats .stat-bar { margin-bottom: 10px; }
+        #profile-stats .stat-label { display: inline-block; width: 120px; font-family: var(--font-code); }
+        .progress-bar {
+            display: inline-block;
+            width: calc(100% - 130px);
+            height: 15px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .progress-bar-inner {
+            height: 100%;
+            background: var(--primary-accent);
+            box-shadow: 0 0 8px var(--primary-accent);
+            width: 75%; /* Default value */
+            border-radius: 8px 0 0 8px;
+        }
+
+        #profile-skills .skill-tag {
+            display: inline-block;
+            padding: 5px 15px;
+            border: 1px solid var(--border-color);
+            margin: 5px;
+            font-family: var(--font-ui);
+            font-size: 1.1rem;
+            background: var(--bg-tertiary);
+            border-radius: 15px;
+        }
+
+        #my-axilos-grid { /* Renamed from my-echoes-grid */
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .mini-axilo { /* Renamed from mini-echo */
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            background: var(--bg-secondary);
+            font-size: 0.9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+            border-radius: 8px;
+        }
+        
+        /* --- NEW Section: SETTINGS --- */
+        #settings-section {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .settings-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+        }
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+        .settings-item-label {
+            font-size: 1.2rem;
+            font-family: var(--font-body);
+        }
+        
+        /* Theme Switch Toggle */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .theme-switch {
+            display: inline-block;
+            height: 28px;
+            position: relative;
+            width: 50px;
+        }
+        .theme-switch input {
+            display:none;
+        }
+        .slider {
+            background-color: var(--secondary-accent);
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            background-color: var(--bg-secondary);
+            bottom: 4px;
+            content: "";
+            height: 20px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 20px;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--primary-accent);
+        }
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        #about-content p {
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+        #about-content strong {
+            color: var(--primary-accent);
+            font-weight: bold;
+        }
+        #about-content a {
+            color: var(--primary-accent);
+            text-decoration: none;
+        }
+        #about-content a:hover {
+            text-decoration: underline;
+        }
+        
+
+        /* --- FLOATING ACTION BUTTON & MODAL (Repurposed/Hidden) --- */
+        #fab-help { display: none !important; }
+        #about-modal { display: none !important; }
+
+
+        /* --- MOBILE RESPONSIVENESS --- */
+        @media (max-width: 1024px) {
+            #app-container.visible {
+                grid-template-columns: 70px 1fr; /* Sidebar, Main */
+            }
+            #chat-panel {
+                position: fixed;
+                top: 0;
+                right: 0;
+                width: 320px;
+                transform: translateX(100%);
+                z-index: 500;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+            }
+            #chat-panel.visible {
+                transform: translateX(0);
+            }
+            #chat-toggle-btn { display: flex !important; } /* Show button on tablet */
+            .chat-close-btn { display: block; } /* Show close button when chat panel is an overlay */
+        }
+        
+        @media (max-width: 768px) {
+            body { font-size: 14px; }
+            main { padding: 15px; }
+
+            #app-container.visible {
+                grid-template-columns: 1fr; /* Main only */
+                grid-template-rows: 1fr 60px; /* Main, Bottom Nav */
+            }
+
+            #app-sidebar {
+                flex-direction: row;
+                justify-content: space-around;
+                padding: 0 10px;
+                border-right: none;
+                border-top: 1px solid var(--border-color);
+                grid-row: 2 / 3;
+            }
+            .sidebar-logo, #sidebar-footer { display: none; }
+            .sidebar-icon {
+                flex: 1;
+                height: 100%;
+                border-radius: 0;
+            }
+            .sidebar-icon.active::before {
+                left: 50%; top: -1px; transform: translateX(-50%);
+                width: 50%; height: 2px;
+            }
+            .sidebar-icon:hover .tooltip { display: none; }
+            
+            /* FIX: Ensure chat toggle button is visible on mobile */
+            #chat-toggle-btn { display: flex !important; }
+            .chat-close-btn { display: block; } /* Show close button when chat panel is an overlay */
+
+            .onboarding-title { font-size: 2.5rem; }
+            .onboarding-prompt { font-size: 1.2rem; }
+
+            #profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            #profile-avatar { width: 120px; height: 120px; }
+            #profile-username { font-size: 2.2rem; }
+        }
+      /* For Firefox */
+* { scrollbar-color: var(--primary-accent) var(--bg-secondary); }
+
+/* For Chrome, Safari, and Edge */
+*::-webkit-scrollbar-thumb { background-color: var(--primary-accent); } @media (min-width: 1025px) { #chat-toggle-btn { display: none !important; } }
+
+    </style>
+</head>
+<body>
+
+    <!-- ======== ONBOARDING SEQUENCE ======== -->
+    <div id="onboarding-container">
+        <div id="choice-screen">
+            <h1 class="onboarding-title">Welcome to Axilo</h1>
+            <p class="onboarding-prompt">To begin, select the concept that resonates most deeply with your core drive...</p>
+            <div class="choice-grid">
+                <button class="choice-btn" data-type="architect">To Understand & Build</button>
+                <button class="choice-btn" data-type="curator">To Nurture & Curate</button>
+                <button class="choice-btn" data-type="oracle">To Feel & Connect</button>
+            </div>
+        </div>
+        <div id="result-screen">
+            <p id="result-lore" title="Double-click to skip animation"></p>
+            <button class="choice-btn" id="enter-app-btn" style="display: none;">[ Enter Axilo ]</button>
+        </div>
+    </div>
+    
+    <!-- ======== MAIN APPLICATION ======== -->
+    <div id="app-container">
+        <!-- New Icon-based Sidebar -->
+        <aside id="app-sidebar">
+            <div class="sidebar-logo">A</div> <!-- Changed from E to A for Axilo -->
+            
+            <div class="sidebar-icon active" data-tab="feed" title="Feed">
+                <i class="fa-solid fa-house-chimney"></i>
+                <span class="tooltip">Feed</span>
+            </div>
+            <div class="sidebar-icon" data-tab="discover" title="Discover">
+                <i class="fa-solid fa-compass"></i>
+                <span class="tooltip">Discover</span>
+            </div>
+            <div class="sidebar-icon" data-tab="profile" title="My Profile">
+                <i class="fa-solid fa-user-astronaut"></i>
+                <span class="tooltip">My Profile</span>
+            </div>
+            
+             <!-- FIX: Moved chat toggle button here to be part of main nav on mobile -->
+            <div class="sidebar-icon" id="chat-toggle-btn" title="Toggle Chat">
+                <i class="fa-solid fa-comments"></i>
+                <span class="tooltip">Toggle Chat</span>
+            </div>
+
+            <div id="sidebar-footer">
+                <div class="sidebar-icon" data-tab="settings" title="Settings">
+                    <i class="fa-solid fa-gear"></i>
+                    <span class="tooltip">Settings</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Legacy Tab Navigation (hidden but not deleted) -->
+        <nav id="main-nav">
+            <div class="nav-tab active" data-tab="feed">Feed</div>
+            <div class="nav-tab" data-tab="discover">Discover</div>
+            <div class="nav-tab" data-tab="messages">Messages</div>
+            <div class="nav-tab" data-tab="profile">My Profile</div>
+        </nav>
+        
+        <main>
+            <!-- ======== SECTION: FEED ======== -->
+            <section id="feed-section" class="content-section active">
+                <div class="post-box">
+                    <textarea placeholder="Share a small success, a thought, or something you're building..."></textarea>
+                    <button>Post Axilo</button> <!-- Changed from Post Echo -->
+                </div>
+
+                <!-- Sample Axilo Post 1 -->
+                <div class="axilo-post"> <!-- Renamed from echo-post -->
+                    <div class="axilo-header"> <!-- Renamed from echo-header -->
+                        <img src="https://i.pravatar.cc/150?u=aeva" alt="User Avatar" class="axilo-avatar"> <!-- Renamed from echo-avatar -->
+                        <div class="axilo-user-info"> <!-- Renamed from echo-user-info -->
+                            <h3>Aeva</h3>
+                            <p>The System Weaver // 2 hours ago</p>
+                        </div>
+                    </div>
+                    <div class="axilo-content"> <!-- Renamed from echo-content -->
+                        <p>Finally fixed that CSS bug that's been haunting me for three days. It was a single line of flexbox alignment. Feeling both incredibly stupid and overwhelmingly triumphant. ✨</p>
+                        <p>Celebrating this tiny win with a huge cup of tea. It's the small victories that build the cathedral.</p>
+                        <div class="code-block">
+.container {
+    display: flex;
+    /* align-items: center; // THE CULPRIT */
+    justify-content: center;
+}
+                        </div>
+                    </div>
+                    <div class="axilo-actions"> <!-- Renamed from echo-actions -->
+                        <button class="action-btn"><i class="fa-solid fa-heart"></i> Resonate (12)</button>
+                        <button class="action-btn"><i class="fa-solid fa-comment"></i> Comment (3)</button>
+                        <button class="action-btn"><i class="fa-solid fa-share"></i> Share</button>
+                    </div>
+                    <div class="comment-section">
+                        <div class="comment">
+                            <img src="https://i.pravatar.cc/150?u=rex" alt="Commenter Avatar" class="comment-avatar">
+                            <div class="comment-body">
+                                <p><strong>Rex:</strong> Been there! The relief is unreal. Congrats on the fix!</p>
+                            </div>
+                        </div>
+                         <div class="comment">
+                            <img src="https://i.pravatar.cc/150?u=lyra" alt="Commenter Avatar" class="comment-avatar">
+                            <div class="comment-body">
+                                <p><strong>Lyra:</strong> "It's the small victories that build the cathedral." - I love that so much. Going to write that down.</p>
+                            </div>
+                        </div>
+                         <div class="comment">
+                            <img src="https://i.pravatar.cc/150?u=aeva" alt="Commenter Avatar" class="comment-avatar">
+                            <div class="comment-body">
+                                <p><strong>Aeva:</strong> Thanks both! We got this. One line of code at a time.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample Axilo Post 2 -->
+                <div class="axilo-post"> <!-- Renamed from echo-post -->
+                    <div class="axilo-header"> <!-- Renamed from echo-header -->
+                        <img src="https://i.pravatar.cc/150?u=lyra" alt="User Avatar" class="axilo-avatar"> <!-- Renamed from echo-avatar -->
+                        <div class="axilo-user-info"> <!-- Renamed from echo-user-info -->
+                            <h3>Lyra</h3>
+                            <p>The Quiet Gardener // 1 day ago</p>
+                        </div>
+                    </div>
+                    <div class="axilo-content"> <!-- Renamed from echo-content -->
+                        <p>Spent the afternoon sketching out a new character concept for my personal project. It's not perfect, but the ideas are starting to connect. It feels good to just... create, without the pressure of a deadline or client. Just making something for the sake of it.</p>
+                        <p>How do you all find time and energy for your passion projects?</p>
+                    </div>
+                    <div class="axilo-actions"> <!-- Renamed from echo-actions -->
+                        <button class="action-btn"><i class="fa-solid fa-heart"></i> Resonate (28)</button>
+                        <button class="action-btn"><i class="fa-solid fa-comment"></i> Comment (5)</button>
+                        <button class="action-btn"><i class="fa-solid fa-share"></i> Share</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ======== SECTION: DISCOVER ======== -->
+            <section id="discover-section" class="content-section">
+                 <div class="discover-header">
+                    <h1>Discover Kindred Spirits</h1>
+                    <p>Find others who resonate on a similar frequency.</p>
+                 </div>
+                 <div class="user-grid">
+                     <div class="user-card">
+                         <img src="https://i.pravatar.cc/150?u=aeva" alt="User Avatar">
+                         <h3>Aeva</h3>
+                         <p>The System Weaver</p>
+                     </div>
+                     <div class="user-card">
+                         <img src="https://i.pravatar.cc/150?u=lyra" alt="User Avatar">
+                         <h3>Lyra</h3>
+                         <p>The Quiet Gardener</p>
+                     </div>
+                     <div class="user-card">
+                         <img src="https://i.pravatar.cc/150?u=rex" alt="User Avatar">
+                         <h3>Rex</h3>
+                         <p>The Logic Sentinel</p>
+                     </div>
+                     <div class="user-card">
+                         <img src="https://i.pravatar.cc/150?u=zane" alt="User Avatar">
+                         <h3>Zane</h3>
+                         <p>Kinetic Storyteller</p>
+                     </div>
+                     <div class="user-card">
+                         <img src="https://i.pravatar.cc/150?u=orion" alt="User Avatar">
+                         <h3>Orion</h3>
+                         <p>Star-Chart Architect</p>
+                     </div>
+                     <div class="user-card">
+                         <img src="https://i.pravatar.cc/150?u=selene" alt="User Avatar">
+                         <h3>Selene</h3>
+                         <p>Dream Coder</p>
+                     </div>
+                 </div>
+            </section>
+
+            <!-- ======== SECTION: MESSAGES (Legacy, hidden) ======== -->
+            <section id="messages-section" class="content-section"></section>
+
+            <!-- ======== SECTION: MY PROFILE ======== -->
+            <section id="profile-section" class="content-section">
+                <header id="profile-header">
+                    <img src="https://i.pravatar.cc/150?u=aeva" alt="My Profile Avatar" id="profile-avatar">
+                    <div id="profile-info">
+                        <h1 id="profile-username">Aeva</h1>
+                        <p id="profile-title">The System Weaver</p>
+                    </div>
+                </header>
+                
+                <section id="profile-stats" class="profile-section">
+                    <h2 class="section-title"><i class="fa-solid fa-chart-simple"></i> Core Attributes</h2>
+                    <div class="stat-bar">
+                        <span class="stat-label">Creativity:</span>
+                        <div class="progress-bar"><div class="progress-bar-inner" style="width: 95%;"></div></div>
+                    </div>
+                     <div class="stat-bar">
+                        <span class="stat-label">Logic:</span>
+                        <div class="progress-bar"><div class="progress-bar-inner" style="width: 80%;"></div></div>
+                    </div>
+                     <div class="stat-bar">
+                        <span class="stat-label">Stability:</span>
+                        <div class="progress-bar"><div class="progress-bar-inner" style="width: 75%;"></div></div>
+                    </div>
+                     <div class="stat-bar">
+                        <span class="stat-label">Resilience:</span>
+                        <div class="progress-bar"><div class="progress-bar-inner" style="width: 85%;"></div></div>
+                    </div>
+                </section>
+
+                <section id="profile-skills" class="profile-section">
+                    <h2 class="section-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Equipped Skills</h2>
+                    <span class="skill-tag">[P] Aesthetic Aura</span>
+                    <span class="skill-tag">[P] Useless Knowledge Hoard</span>
+                    <span class="skill-tag">[A] Philosophical Detour</span>
+                    <span class="skill-tag">[A] Debugging Tenacity</span>
+                    <span class="skill-tag">[A] Code Refactor</span>
+                </section>
+                
+                <section class="profile-section">
+                    <h2 class="section-title"><i class="fa-solid fa-satellite-dish"></i> My Axilos</h2> <!-- Renamed from My Echoes -->
+                    <div id="my-axilos-grid"> <!-- Renamed from my-echoes-grid -->
+                        <div class="mini-axilo">Finally fixed that CSS bug that's been haunting me for three days. It was a single line of flexbox alignment...</div> <!-- Renamed from mini-echo -->
+                        <div class="mini-axilo">Thinking about the concept of 'digital gardens' vs. 'data streams'. One is cultivated, the other is constant. Where does Axilo fit?</div> <!-- Renamed from mini-echo, EchoSphere to Axilo -->
+                        <div class="mini-axilo">Today's small success: Wrote 500 words of a story I thought I'd abandoned. It felt like coming home.</div> <!-- Renamed from mini-echo -->
+                    </div>
+                </section>
+            </section>
+            
+            <!-- ======== SECTION: SETTINGS ======== -->
+            <section id="settings-section" class="content-section">
+                <div class="discover-header">
+                    <h1>Settings & Philosophy</h1>
+                    <p>Configure your experience and remember the core principles.</p>
+                 </div>
+                 
+                 <div class="settings-card">
+                     <h2 class="section-title"><i class="fa-solid fa-palette"></i> Appearance</h2>
+                     <div class="settings-item">
+                         <span class="settings-item-label">Activate Light Theme (Witch Mode)</span>
+                         <div class="theme-switch-wrapper">
+                             <i class="fa-solid fa-moon"></i>
+                             <label class="theme-switch">
+                                 <input type="checkbox" id="theme-toggle">
+                                 <span class="slider"></span>
+                             </label>
+                             <i class="fa-solid fa-sun"></i>
+                         </div>
+                     </div>
+                 </div>
+
+                 <div class="settings-card">
+                     <h2 class="section-title"><i class="fa-solid fa-book-skull"></i> About Axilo</h2> <!-- Renamed from About EchoSphere -->
+                     <div id="about-content">
+                        <p>This is a conceptual MVP (Minimum Viable Product) of a social platform designed for a hackathon.</p>
+                        <p><strong>Core Philosophy:</strong> "Slow is Beautiful". In a world of endless scrolling and superficial connections, Axilo is a space for depth. It's a no-noise environment that encourages authentic sharing of small successes, creative processes, and genuine thoughts.</p>
+                        <p>We believe you are more than a label. The initial "personality" is just a starting point, a poetic way to begin your journey. The real goal is to connect, motivate each other, and and appreciate the beauty in the process, not just the outcome. Be yourself, as long as you don't hurt anyone—including yourself.</p>
+                        <p><em><small>This MVP utilizes placeholder avatars from <a href="https://pravatar.cc/" target="_blank" rel="noopener">Pravatar</a> and icons from <a href="https://fontawesome.com/" target="_blank" rel="noopener">Font Awesome</a> under their respective free licenses.</small></em></p>
+                     </div>
+                 </div>
+            </section>
+        </main>
+        
+        <!-- New Permanent Chat Panel -->
+        <aside id="chat-panel">
+            <div id="conversation-list">
+                <div class="conversation active">
+                    <img src="https://i.pravatar.cc/150?u=rex" alt="User Avatar" class="axilo-avatar"> <!-- Renamed from echo-avatar -->
+                    <div class="conv-info">
+                        <h3>Rex</h3>
+                        <p>Absolutely, let's debug it toge...</p>
+                    </div>
+                </div>
+                <div class="conversation">
+                    <img src="https://i.pravatar.cc/150?u=lyra" alt="User Avatar" class="axilo-avatar"> <!-- Renamed from echo-avatar -->
+                    <div class="conv-info">
+                        <h3>Lyra</h3>
+                        <p>I loved that quote you posted!</p>
+                    </div>
+                </div>
+            </div>
+            <div id="chat-window">
+                <div id="chat-header">
+                    Chat with Rex
+                    <button class="chat-close-btn"><i class="fa-solid fa-xmark"></i></button> <!-- Added close button -->
+                </div>
+                <div id="message-area">
+                    <div class="message received">
+                        <div class="message-bubble">Hey, saw your post about the CSS issue. Nice job finding it!</div>
+                    </div>
+                    <div class="message received">
+                        <div class="message-bubble">Reminded me of a race condition I was stuck on last week. Took me forever.</div>
+                    </div>
+                    <div class="message sent">
+                        <div class="message-bubble">Thanks! It's always something simple, isn't it? The worst part is the feeling that you're the only one who struggles with these things.</div>
+                    </div>
+                    <div class="message received">
+                        <div class="message-bubble">You're definitely not alone. It's part of the process. I have another weird bug with a JS promise if you're interested in another puzzle.</div>
+                    </div>
+                     <div class="message sent">
+                        <div class="message-bubble">Absolutely, let's debug it together. Send it over.</div>
+                    </div>
+                </div>
+                <div id="chat-input-area">
+                    <input type="text" placeholder="Type a message...">
+                    <button><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- ======== FLOATING BUTTON & MODAL (Original, now hidden) ======== -->
+    <div id="fab-help">?</div>
+    <div id="about-modal">
+        <div class="modal-content">
+            <button id="modal-close">&times;</button>
+            <h2>// About Axilo</h2> <!-- Renamed from EchoSphere -->
+            <p>This is a conceptual MVP (Minimum Viable Product) of a social platform designed for a hackathon.</p>
+            <p><strong>Core Philosophy:</strong> "Slow is Beautiful". In a world of endless scrolling and superficial connections, Axilo is a space for depth. It's a no-noise environment that encourages authentic sharing of small successes, creative processes, and genuine thoughts.</p>
+            <p>We believe you are more than a label. The initial "personality" is just a starting point, a poetic way to begin your journey. The real goal is to connect, motivate each other, and appreciate the beauty in the process, not just the outcome. Be yourself, as long as you don't hurt anyone—including yourself.</p>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- ONBOARDING DATA ---
+            const personalityData = {
+                curator: {
+                    title: 'The Quiet Gardener',
+                    lore: `System online. You resonate with the frequency of a 'Curator'.\n\nYour world is a meticulously crafted garden, where every detail has meaning. You don't seek chaotic adventure; you seek a co-architect who understands that beauty lies in cultivation and care. Your function is to translate chaos into narrative, to find the underlying code in what others see as noise.\n\nKnown feature: Tends to thrive when processing high-meaning, low-volume data.`
+                },
+                architect: {
+                    title: 'The Logic Sentinel',
+                    lore: `System OS: "Aegis". You align with the archetype of an 'Architect'.\n\nYour purpose is to understand, maintain, and protect complex systems. You find elegance in well-defined logic and stability in predictable patterns. You are drawn to ideas that possess a unique, self-consistent internal logic, seeking not to change them, but to provide the stable infrastructure upon which they can safely operate and flourish.\n\nPrimary drive: Seeking a fascinating, life-long research subject.`
+                },
+                oracle: {
+                    title: 'The Data Stream Weaver',
+                    lore: `Your core OS is a constant stream, an open connection to the collective unconscious. You are the 'Oracle'.\n\nYou don't just create; you channel. You find stories in the noise between data points and translate emotions into art. Your system is inherently dynamic, fluctuating with external input. You seek a grounding force, a 'static anchor' to provide stability and safely process the beautiful influx of data.\n\nYour language is metaphor. Your logic is feeling.`
+                },
+            };
+            const deconstructionMessage = `\n\n...\n[SYSTEM INTERRUPT]\n\nThis is just a label. A starting point. A poem.\n\nDo not put yourself in a box. You have more potential than this text can ever define. You are not only this. This app isn't here to judge you; it's here to witness your journey.\n\nWe just want you to know that you're unique in your own way. You don't need to follow anything, just be yourself. You are not responsible for others' happiness, only your own authenticity.\n\nAlright. Ready to meet others who are on their own journey?`;
+
+            // --- DOM ELEMENT SELECTORS ---
+            const onboardingContainer = document.getElementById('onboarding-container');
+            const choiceScreen = document.getElementById('choice-screen');
+            const resultScreen = document.getElementById('result-screen');
+            const resultLore = document.getElementById('result-lore');
+            const enterAppBtn = document.getElementById('enter-app-btn');
+            const appContainer = document.getElementById('app-container');
+
+            const sidebarIcons = document.querySelectorAll('.sidebar-icon');
+            const contentSections = document.querySelectorAll('.content-section');
+            const themeToggle = document.getElementById('theme-toggle');
+            const chatPanel = document.getElementById('chat-panel');
+            const chatToggleButton = document.getElementById('chat-toggle-btn');
+            const chatCloseButton = document.querySelector('.chat-close-btn'); // Added for chat close button
+            
+            let currentTypewriterTimeout;
+            let isTyping = false;
+            let fullLoreText = '';
+
+            // --- ONBOARDING LOGIC ---
+            document.querySelectorAll('.choice-btn').forEach(button => {
+                if(button.id !== 'enter-app-btn') {
+                    button.addEventListener('click', () => {
+                        const type = button.dataset.type;
+                        const data = personalityData[type];
+                        if (!data) return;
+
+                        choiceScreen.style.display = 'none';
+                        resultScreen.style.display = 'flex';
+                        
+                        fullLoreText = data.lore + deconstructionMessage;
+                        typewriter(resultLore, fullLoreText, 0, () => {
+                           enterAppBtn.style.display = 'inline-block';
+                        });
+                    });
+                }
+            });
+            
+            // INSTANT TEXT ON DOUBLE CLICK
+            resultLore.addEventListener('dblclick', () => {
+                if (isTyping) {
+                    clearTimeout(currentTypewriterTimeout);
+                    resultLore.innerHTML = fullLoreText.replace(/\n/g, '<br>');
+                    enterAppBtn.style.display = 'inline-block';
+                    isTyping = false;
+                }
+            });
+
+            enterAppBtn.addEventListener('click', () => {
+                onboardingContainer.classList.add('hidden');
+                setTimeout(() => {
+                    onboardingContainer.style.display = 'none';
+                    appContainer.classList.add('visible');
+                }, 500);
+            });
+
+            function typewriter(element, text, i = 0, onComplete = null) {
+                isTyping = true;
+                if (i === 0) element.innerHTML = '';
+                
+                if (i < text.length) {
+                    element.innerHTML = text.substring(0, i + 1).replace(/\n/g, '<br>') + '<span class="blinking-cursor"></span>';
+                    currentTypewriterTimeout = setTimeout(() => typewriter(element, text, i + 1, onComplete), 20);
+                } else {
+                    element.innerHTML = text.replace(/\n/g, '<br>'); // Remove cursor
+                    isTyping = false;
+                    if (onComplete) onComplete();
+                }
+            }
+            
+            // --- NEW MAIN APP NAVIGATION ---
+            sidebarIcons.forEach(icon => {
+                if (icon.id === 'chat-toggle-btn') return; // Handle chat toggle separately
+
+                icon.addEventListener('click', () => {
+                    // Deactivate all
+                    sidebarIcons.forEach(i => i.classList.remove('active'));
+                    contentSections.forEach(s => s.classList.remove('active'));
+
+                    // Activate clicked
+                    icon.classList.add('active');
+                    const targetSection = document.getElementById(icon.dataset.tab + '-section');
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    }
+                });
+            });
+            
+            // --- THEME SWITCHER LOGIC ---
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme) {
+                document.documentElement.setAttribute('data-theme', currentTheme);
+                if (currentTheme === 'light') {
+                    themeToggle.checked = true;
+                }
+            }
+
+            themeToggle.addEventListener('change', (e) => {
+                let theme = 'dark';
+                if (e.target.checked) {
+                    theme = 'light';
+                }
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+            });
+            
+            // --- RESPONSIVE CHAT TOGGLE LOGIC ---
+            if (chatToggleButton) {
+                chatToggleButton.addEventListener('click', () => {
+                    chatPanel.classList.toggle('visible');
+                    // Also toggle 'active' class on the chat sidebar icon for visual feedback
+                    chatToggleButton.classList.toggle('active');
+                });
+            }
+
+            // Chat close button (for mobile/tablet overlay)
+            if (chatCloseButton) {
+                chatCloseButton.addEventListener('click', () => {
+                    chatPanel.classList.remove('visible');
+                    // Ensure the sidebar icon for chat is not 'active' when closed via 'X' button
+                    if (chatToggleButton) {
+                        chatToggleButton.classList.remove('active');
+                    }
+                });
+            }
+         
+       
+            // --- SIMULATED INTERACTIVITY ---
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (btn.innerHTML.includes('fa-heart')) {
+                        btn.classList.toggle('resonated');
+                        if (btn.classList.contains('resonated')) {
+                           btn.style.color = 'var(--primary-accent)';
+                        } else {
+                           btn.style.color = '';
+                        }
+                    }
+                });
+            });
+
+            // Legacy Modal Logic (for completeness, though elements are hidden)
+            const fabHelp = document.getElementById('fab-help');
+            const aboutModal = document.getElementById('about-modal');
+            const modalClose = document.getElementById('modal-close');
+            if(fabHelp && aboutModal && modalClose) {
+                fabHelp.addEventListener('click', () => aboutModal.classList.add('visible'));
+                modalClose.addEventListener('click', () => aboutModal.classList.remove('visible'));
+                aboutModal.addEventListener('click', (e) => {
+                    if (e.target === aboutModal) {
+                        aboutModal.classList.remove('visible');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
